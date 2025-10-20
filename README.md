@@ -2,7 +2,7 @@
 
 ## Clean, Fast, Reliable Bridge Between Kiro IDE and Amazon Q Developer
 
-A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your projects without needing to be open in the IDE.
+A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your Kiro projects without needing to be always open in the Kiro IDE.
 
 ## 🤝 Kiro + Amazon Q Developer: The Perfect Development Partnership
 
