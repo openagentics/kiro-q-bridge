@@ -241,6 +241,58 @@ Once installed, the bridge is available **globally** in Kiro IDE:
 ./link-messages.sh
 ```
 
+## 🔍 **CRITICAL: Accessing Your Kiro-Q Conversation History**
+
+**📁 Message File Location:** `~/.kiro/q-messages.json`
+
+This file contains ALL communication between you, Kiro, and Amazon Q. It's stored in your home directory's `.kiro` folder, NOT in your current project.
+
+### **How to Access the Conversation History:**
+
+**Option 1: Open Directly in Kiro IDE**
+- Press `Cmd+P` (Quick Open) or `Ctrl+P`
+- Type: `~/.kiro/q-messages.json`
+- Press Enter to open
+
+**Option 2: Use File Menu**
+- Go to **File** → **Open**
+- Navigate to your home directory
+- Show hidden files (if needed)
+- Open `.kiro` folder → `q-messages.json`
+
+**Option 3: Copy to Current Workspace**
+```bash
+cp ~/.kiro/q-messages.json ./kiro-q-messages.json
+```
+
+**Option 4: Use Our Utility Scripts**
+```bash
+# View formatted messages in terminal
+./view-messages.sh
+
+# Create symbolic link in current project
+./link-messages.sh
+```
+
+**Option 5: Terminal View**
+```bash
+# View raw JSON
+cat ~/.kiro/q-messages.json
+
+# Pretty formatted view (requires jq)
+cat ~/.kiro/q-messages.json | jq .
+```
+
+### **What You'll Find in the Message History:**
+- ✅ All your messages to Amazon Q
+- ✅ Q's responses and analysis
+- ✅ Project context tags for each message
+- ✅ Timestamps and priority levels
+- ✅ Complete conversation threads
+- ✅ Cross-project communication history
+
+**💡 Pro Tip:** Keep this file open in a tab for easy access to your ongoing Q conversations!
+
 ### Key Features
 
 - **🚀 Fast**: Sub-50ms startup time (vs 200-500ms in v3)
