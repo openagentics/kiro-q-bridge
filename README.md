@@ -50,8 +50,8 @@ kiro-q-bridge-v4/
 
 ```bash
 # Clone and install
-git clone https://github.com/ArtificialChatInc/kiro-q-bridge-v4.git
-cd kiro-q-bridge-v4
+git clone https://github.com/ArtificialChatInc/kiro-q-bridge.git
+cd kiro-q-bridge
 ./install.sh
 
 # Restart Kiro IDE
