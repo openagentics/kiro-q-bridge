@@ -4,35 +4,6 @@
 
 A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your projects without needing to be open in the IDE.
 
-## 🆕 **Amazon Q Developer: Latest 2024-2025 Capabilities**
-
-### **🔐 AWS Account Integration (Game Changer)**
-- **Direct AWS Console Access**: Q can now read your actual AWS resources, configurations, and deployments
-- **Real-time Infrastructure Insights**: Live analysis of your EC2, Lambda, S3, RDS, and other AWS services
-- **Cost Optimization**: Automatic recommendations based on your actual AWS usage patterns
-- **Security Auditing**: Real-time security posture analysis of your AWS environment
-- **Resource Management**: Intelligent suggestions for scaling, optimization, and cleanup
-
-### **🚀 Enhanced Development Features**
-- **Multi-Language Mastery**: Advanced support for Python, JavaScript, TypeScript, Java, C#, Go, Rust, and 15+ languages
-- **Framework Intelligence**: Deep understanding of React, Angular, Vue, Django, Flask, Spring Boot, .NET, and modern frameworks
-- **Infrastructure as Code**: Expert-level Terraform, CloudFormation, CDK, and Pulumi assistance
-- **DevOps Integration**: CI/CD pipeline optimization, Docker containerization, Kubernetes orchestration
-- **Database Expertise**: Advanced SQL optimization, NoSQL design patterns, database migration strategies
-
-### **🧠 Advanced AI Reasoning**
-- **Architectural Analysis**: System design reviews, microservices patterns, scalability assessments
-- **Performance Profiling**: Code optimization, bottleneck identification, efficiency improvements
-- **Security Best Practices**: Vulnerability detection, secure coding patterns, compliance guidance
-- **Testing Strategy**: Unit test generation, integration testing, test automation frameworks
-- **Documentation Generation**: Automatic API docs, code comments, architectural diagrams
-
-### **🔄 Real-time Collaboration**
-- **Live Code Review**: Continuous analysis as you type with intelligent suggestions
-- **Context Preservation**: Maintains conversation history and project understanding across sessions
-- **Multi-Project Awareness**: Understands relationships between different repositories and services
-- **Team Integration**: Shared knowledge base, consistent coding standards, onboarding acceleration
-
 ## 🤝 Kiro + Amazon Q Developer: The Perfect Development Partnership
 
 ### **🌟 What Makes This Integration Revolutionary**
@@ -175,6 +146,35 @@ With Q's new AWS account access and enhanced capabilities, this bridge unlocks u
 ```
 
 This creates a **multiplicative effect** where 1 + 1 = 3, as each tool amplifies the capabilities of the other, resulting in development capabilities that exceed the sum of their individual parts.
+
+## 🆕 **Amazon Q Developer: Latest 2024-2025 Capabilities**
+
+### **🔐 AWS Account Integration (Game Changer)**
+- **Direct AWS Console Access**: Q can now read your actual AWS resources, configurations, and deployments
+- **Real-time Infrastructure Insights**: Live analysis of your EC2, Lambda, S3, RDS, and other AWS services
+- **Cost Optimization**: Automatic recommendations based on your actual AWS usage patterns
+- **Security Auditing**: Real-time security posture analysis of your AWS environment
+- **Resource Management**: Intelligent suggestions for scaling, optimization, and cleanup
+
+### **🚀 Enhanced Development Features**
+- **Multi-Language Mastery**: Advanced support for Python, JavaScript, TypeScript, Java, C#, Go, Rust, and 15+ languages
+- **Framework Intelligence**: Deep understanding of React, Angular, Vue, Django, Flask, Spring Boot, .NET, and modern frameworks
+- **Infrastructure as Code**: Expert-level Terraform, CloudFormation, CDK, and Pulumi assistance
+- **DevOps Integration**: CI/CD pipeline optimization, Docker containerization, Kubernetes orchestration
+- **Database Expertise**: Advanced SQL optimization, NoSQL design patterns, database migration strategies
+
+### **🧠 Advanced AI Reasoning**
+- **Architectural Analysis**: System design reviews, microservices patterns, scalability assessments
+- **Performance Profiling**: Code optimization, bottleneck identification, efficiency improvements
+- **Security Best Practices**: Vulnerability detection, secure coding patterns, compliance guidance
+- **Testing Strategy**: Unit test generation, integration testing, test automation frameworks
+- **Documentation Generation**: Automatic API docs, code comments, architectural diagrams
+
+### **🔄 Real-time Collaboration**
+- **Live Code Review**: Continuous analysis as you type with intelligent suggestions
+- **Context Preservation**: Maintains conversation history and project understanding across sessions
+- **Multi-Project Awareness**: Understands relationships between different repositories and services
+- **Team Integration**: Shared knowledge base, consistent coding standards, onboarding acceleration
 
 ### Issues Resolved from Previous Versions
 
