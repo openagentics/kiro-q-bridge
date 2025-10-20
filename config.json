@@ -1,0 +1,29 @@
+{
+  "name": "kiro-q-bridge-v4",
+  "version": "4.0.0",
+  "description": "Clean, fast bridge between Kiro IDE and Amazon Q",
+  "features": {
+    "mcp_server": {
+      "protocol": "JSON-RPC 2.0",
+      "startup_time": "<50ms",
+      "language": "Node.js"
+    },
+    "message_queue": {
+      "location": "~/.kiro/q-messages.json",
+      "max_messages": 100,
+      "format": "JSON"
+    },
+    "tools": [
+      "kiro_status",
+      "send_to_q"
+    ]
+  },
+  "improvements_from_v3": [
+    "Fixed MCP timeout errors",
+    "Eliminated configuration conflicts",
+    "Removed code duplication",
+    "Improved startup performance",
+    "Added proper JSON-RPC 2.0 compliance",
+    "Simplified architecture"
+  ]
+}
