@@ -4,14 +4,116 @@
 
 A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q. This is a **global Kiro utility** that works across all your projects without needing to be open in the IDE.
 
-## 🎯 What This Enables
+## 🤝 Kiro + Amazon Q: The Perfect Development Partnership
 
-Amazon Q can now directly communicate with Kiro IDE across ALL projects:
-- ✅ Send messages to Kiro with priority levels
-- ✅ Get real-time status of Kiro and active projects  
-- ✅ Access workspace context and file information
-- ✅ Monitor performance and resource usage
-- ✅ Project-aware conversation history
+### Individual Strengths & Limitations
+
+| Aspect | Kiro IDE | Amazon Q | Combined Power |
+|--------|----------|----------|----------------|
+| **Code Editing** | ✅ Advanced editor, syntax highlighting, IntelliSense | ❌ No direct code manipulation | 🚀 Q provides intelligent suggestions, Kiro implements them |
+| **AI Reasoning** | ❌ Limited AI capabilities | ✅ Advanced reasoning, pattern recognition | 🚀 Q's intelligence guides Kiro's precision |
+| **File Management** | ✅ Full filesystem access, project navigation | ❌ No direct file system access | 🚀 Q analyzes, Kiro executes file operations |
+| **Context Awareness** | ✅ Current file, project structure | ❌ Limited to conversation context | 🚀 Q gets real-time project status from Kiro |
+| **Code Execution** | ✅ Terminal, debugging, build tools | ❌ Cannot execute code directly | 🚀 Q recommends, Kiro executes safely |
+| **Multi-Project Management** | ❌ One project at a time focus | ✅ Can reason across multiple contexts | 🚀 Q orchestrates, Kiro manages individual projects |
+| **Learning & Adaptation** | ❌ Static behavior | ✅ Learns from interactions | 🚀 Q learns from Kiro's project patterns |
+| **Documentation** | ❌ Limited auto-documentation | ✅ Excellent at explaining and documenting | 🚀 Q documents what Kiro builds |
+
+### Core Competency Analysis
+
+#### Kiro IDE Strengths
+- **Precision Tooling**: Exact cursor positioning, multi-cursor editing, advanced find/replace
+- **Development Workflow**: Integrated terminal, debugging, version control, extensions
+- **Performance**: Fast file operations, efficient syntax parsing, responsive UI
+- **Project Management**: Workspace handling, file tree navigation, project-specific settings
+- **Developer Experience**: Customizable interface, keyboard shortcuts, productivity features
+
+#### Kiro IDE Limitations  
+- **Static Intelligence**: No learning or adaptation capabilities
+- **Limited Reasoning**: Cannot analyze patterns across projects or suggest architectural improvements
+- **Manual Decision Making**: Requires developer input for most decisions
+- **Context Isolation**: Limited awareness of broader project goals or industry best practices
+- **Reactive Nature**: Responds to user actions rather than proactively suggesting improvements
+
+#### Amazon Q Strengths
+- **Advanced Reasoning**: Pattern recognition, architectural analysis, best practice recommendations
+- **Broad Knowledge**: Access to vast programming knowledge, frameworks, and methodologies
+- **Proactive Assistance**: Can anticipate needs and suggest improvements
+- **Cross-Project Intelligence**: Understands relationships between different codebases
+- **Learning Capability**: Adapts to user preferences and project patterns
+- **Documentation Excellence**: Superior at explaining complex concepts and generating documentation
+
+#### Amazon Q Limitations
+- **No Direct Execution**: Cannot directly modify files, run commands, or interact with development tools
+- **Context Boundaries**: Limited to conversation history without real-time project access
+- **Implementation Gap**: Can suggest solutions but cannot implement them directly
+- **Tool Integration**: Cannot directly interact with IDEs, terminals, or development environments
+- **Real-time Constraints**: Cannot monitor ongoing development activities or system performance
+
+### 🚀 Synergistic Benefits of Integration
+
+#### 1. **Intelligent Code Development**
+- **Q Analyzes** → **Kiro Implements**: Q reviews code patterns and suggests improvements, Kiro makes precise edits
+- **Real-time Feedback Loop**: Q monitors Kiro's changes and provides continuous guidance
+- **Contextual Suggestions**: Q understands current project state through Kiro's status updates
+
+#### 2. **Proactive Project Management**
+- **Cross-Project Orchestration**: Q manages multiple Kiro projects simultaneously
+- **Performance Monitoring**: Q analyzes project metrics reported by Kiro
+- **Workflow Optimization**: Q suggests process improvements based on Kiro's activity patterns
+
+#### 3. **Enhanced Problem Solving**
+- **Diagnostic Partnership**: Q analyzes error patterns, Kiro provides detailed system information
+- **Solution Implementation**: Q designs solutions, Kiro executes them with precision
+- **Iterative Refinement**: Continuous feedback loop for solution optimization
+
+#### 4. **Knowledge Amplification**
+- **Learning Acceleration**: Q explains concepts while Kiro demonstrates implementation
+- **Best Practice Integration**: Q ensures code follows industry standards, Kiro enforces them
+- **Documentation Synchronization**: Q generates docs that match Kiro's actual implementation
+
+#### 5. **Productivity Multiplication**
+- **Automated Workflows**: Q designs efficient processes, Kiro executes them reliably
+- **Predictive Assistance**: Q anticipates needs based on Kiro's project patterns
+- **Seamless Context Switching**: Q maintains project context as Kiro switches between tasks
+
+### 🎯 What This Integration Enables
+
+**For Developers:**
+- ✅ **AI Pair Programming**: Continuous intelligent assistance without leaving the IDE
+- ✅ **Proactive Problem Solving**: Issues identified and solutions suggested before they become critical
+- ✅ **Cross-Project Intelligence**: Insights and patterns shared across all development work
+- ✅ **Automated Documentation**: Real-time documentation that stays synchronized with code
+- ✅ **Performance Optimization**: Continuous monitoring and improvement suggestions
+
+**For Teams:**
+- ✅ **Consistent Standards**: Q ensures all team members follow best practices through Kiro
+- ✅ **Knowledge Sharing**: Q learns from each developer's patterns and shares insights
+- ✅ **Quality Assurance**: Automated code review and improvement suggestions
+- ✅ **Onboarding Acceleration**: New team members get intelligent guidance through Kiro
+
+**For Organizations:**
+- ✅ **Development Velocity**: Faster development cycles with intelligent automation
+- ✅ **Code Quality**: Consistent application of best practices across all projects
+- ✅ **Risk Reduction**: Proactive identification of potential issues and technical debt
+- ✅ **Innovation Enablement**: More time for creative work, less time on routine tasks
+
+### 🔄 The Feedback Loop
+
+```
+┌─────────────┐    Real-time Status    ┌─────────────┐
+│   Kiro IDE  │ ────────────────────► │  Amazon Q   │
+│             │                       │             │
+│ • Executes  │ ◄──── Intelligent ──── │ • Analyzes  │
+│ • Monitors  │       Guidance         │ • Suggests  │
+│ • Reports   │                       │ • Learns    │
+└─────────────┘                       └─────────────┘
+       ▲                                     │
+       │              Enhanced               │
+       └──────────── Capabilities ──────────┘
+```
+
+This creates a **multiplicative effect** where 1 + 1 = 3, as each tool amplifies the capabilities of the other, resulting in development capabilities that exceed the sum of their individual parts.
 
 ### Issues Resolved from Previous Versions
 
