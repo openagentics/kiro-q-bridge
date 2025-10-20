@@ -1,8 +1,8 @@
 # Kiro-Q Bridge v4
 
-## Clean, Fast, Reliable Bridge Between Kiro IDE and Amazon Q Developer
+## Clean, Fast, Reliable COMMUNICATION Bridge Between Kiro IDE and Amazon Q Developer
 
-A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your Kiro projects without needing to be always open in the Kiro IDE.
+At Kiro's release in July 2025, Q Developer was integrated as an extension its own separate chat interface. Until now though, Kiro & Q could not talk directly to each other, so we've built a lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your Kiro projects without needing to be always open in the Kiro IDE.
 
 ## 🤝 Kiro + Amazon Q Developer: The Perfect Development Partnership
 
