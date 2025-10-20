@@ -1,23 +1,65 @@
 # Kiro-Q Bridge v4
 
-## Clean, Fast, Reliable Bridge Between Kiro IDE and Amazon Q
+## Clean, Fast, Reliable Bridge Between Kiro IDE and Amazon Q Developer
 
-A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q. This is a **global Kiro utility** that works across all your projects without needing to be open in the IDE.
+A lightweight, production-ready MCP (Model Context Protocol) server that enables seamless communication between Kiro IDE and Amazon Q Developer. This is a **global Kiro utility** that works across all your projects without needing to be open in the IDE.
 
-## 🤝 Kiro + Amazon Q: The Perfect Development Partnership
+## 🆕 **Amazon Q Developer: Latest 2024-2025 Capabilities**
+
+### **🔐 AWS Account Integration (Game Changer)**
+- **Direct AWS Console Access**: Q can now read your actual AWS resources, configurations, and deployments
+- **Real-time Infrastructure Insights**: Live analysis of your EC2, Lambda, S3, RDS, and other AWS services
+- **Cost Optimization**: Automatic recommendations based on your actual AWS usage patterns
+- **Security Auditing**: Real-time security posture analysis of your AWS environment
+- **Resource Management**: Intelligent suggestions for scaling, optimization, and cleanup
+
+### **🚀 Enhanced Development Features**
+- **Multi-Language Mastery**: Advanced support for Python, JavaScript, TypeScript, Java, C#, Go, Rust, and 15+ languages
+- **Framework Intelligence**: Deep understanding of React, Angular, Vue, Django, Flask, Spring Boot, .NET, and modern frameworks
+- **Infrastructure as Code**: Expert-level Terraform, CloudFormation, CDK, and Pulumi assistance
+- **DevOps Integration**: CI/CD pipeline optimization, Docker containerization, Kubernetes orchestration
+- **Database Expertise**: Advanced SQL optimization, NoSQL design patterns, database migration strategies
+
+### **🧠 Advanced AI Reasoning**
+- **Architectural Analysis**: System design reviews, microservices patterns, scalability assessments
+- **Performance Profiling**: Code optimization, bottleneck identification, efficiency improvements
+- **Security Best Practices**: Vulnerability detection, secure coding patterns, compliance guidance
+- **Testing Strategy**: Unit test generation, integration testing, test automation frameworks
+- **Documentation Generation**: Automatic API docs, code comments, architectural diagrams
+
+### **🔄 Real-time Collaboration**
+- **Live Code Review**: Continuous analysis as you type with intelligent suggestions
+- **Context Preservation**: Maintains conversation history and project understanding across sessions
+- **Multi-Project Awareness**: Understands relationships between different repositories and services
+- **Team Integration**: Shared knowledge base, consistent coding standards, onboarding acceleration
+
+## 🤝 Kiro + Amazon Q Developer: The Perfect Development Partnership
+
+### **🌟 What Makes This Integration Revolutionary**
+
+With Q's new AWS account access and enhanced capabilities, this bridge unlocks unprecedented development power:
+
+- **🔍 Live Infrastructure Monitoring**: Q analyzes your actual AWS resources while you code
+- **💰 Real-time Cost Optimization**: Immediate feedback on resource usage and cost implications
+- **🛡️ Continuous Security Auditing**: Proactive security recommendations based on your actual setup
+- **📊 Performance Intelligence**: Data-driven optimization suggestions from your live metrics
+- **🚀 Deployment Orchestration**: Intelligent CI/CD recommendations based on your actual pipelines
 
 ### Individual Strengths & Limitations
 
-| Aspect | Kiro IDE | Amazon Q | Combined Power |
+| Aspect | Kiro IDE | Amazon Q Developer | Combined Power |
 |--------|----------|----------|----------------|
 | **Code Editing** | ✅ Advanced editor, syntax highlighting, IntelliSense | ❌ No direct code manipulation | 🚀 Q provides intelligent suggestions, Kiro implements them |
 | **AI Reasoning** | ❌ Limited AI capabilities | ✅ Advanced reasoning, pattern recognition | 🚀 Q's intelligence guides Kiro's precision |
+| **AWS Integration** | ❌ No cloud service awareness | ✅ **Direct AWS account access, live resource monitoring** | 🚀 **Q monitors your AWS infrastructure while Kiro codes** |
+| **Infrastructure Insights** | ❌ No deployment context | ✅ **Real-time cost analysis, security auditing** | 🚀 **Q optimizes deployments as Kiro builds** |
 | **File Management** | ✅ Full filesystem access, project navigation | ❌ No direct file system access | 🚀 Q analyzes, Kiro executes file operations |
-| **Context Awareness** | ✅ Current file, project structure | ❌ Limited to conversation context | 🚀 Q gets real-time project status from Kiro |
+| **Context Awareness** | ✅ Current file, project structure | ✅ **Conversation + AWS environment context** | 🚀 **Q understands both code AND infrastructure** |
 | **Code Execution** | ✅ Terminal, debugging, build tools | ❌ Cannot execute code directly | 🚀 Q recommends, Kiro executes safely |
 | **Multi-Project Management** | ❌ One project at a time focus | ✅ Can reason across multiple contexts | 🚀 Q orchestrates, Kiro manages individual projects |
-| **Learning & Adaptation** | ❌ Static behavior | ✅ Learns from interactions | 🚀 Q learns from Kiro's project patterns |
-| **Documentation** | ❌ Limited auto-documentation | ✅ Excellent at explaining and documenting | 🚀 Q documents what Kiro builds |
+| **Performance Monitoring** | ❌ No live metrics access | ✅ **Real-time AWS CloudWatch integration** | 🚀 **Q provides performance insights from live data** |
+| **Security Analysis** | ❌ Basic static analysis | ✅ **Live security posture assessment** | 🚀 **Q identifies vulnerabilities in running systems** |
+| **Cost Optimization** | ❌ No cost awareness | ✅ **Real-time AWS cost analysis and recommendations** | 🚀 **Q prevents expensive mistakes before deployment** |
 
 ### Core Competency Analysis
 
@@ -35,44 +77,55 @@ A lightweight, production-ready MCP (Model Context Protocol) server that enables
 - **Context Isolation**: Limited awareness of broader project goals or industry best practices
 - **Reactive Nature**: Responds to user actions rather than proactively suggesting improvements
 
-#### Amazon Q Strengths
+#### Amazon Q Developer Strengths
 - **Advanced Reasoning**: Pattern recognition, architectural analysis, best practice recommendations
 - **Broad Knowledge**: Access to vast programming knowledge, frameworks, and methodologies
+- **🆕 AWS Integration**: **Direct access to your AWS account, resources, and live metrics**
+- **💰 Cost Intelligence**: **Real-time cost analysis and optimization recommendations**
+- **🛡️ Security Monitoring**: **Live security posture assessment and vulnerability detection**
+- **📊 Performance Insights**: **CloudWatch integration for real-time performance analysis**
 - **Proactive Assistance**: Can anticipate needs and suggest improvements
 - **Cross-Project Intelligence**: Understands relationships between different codebases
 - **Learning Capability**: Adapts to user preferences and project patterns
 - **Documentation Excellence**: Superior at explaining complex concepts and generating documentation
 
-#### Amazon Q Limitations
+#### Amazon Q Developer Limitations
 - **No Direct Execution**: Cannot directly modify files, run commands, or interact with development tools
-- **Context Boundaries**: Limited to conversation history without real-time project access
 - **Implementation Gap**: Can suggest solutions but cannot implement them directly
 - **Tool Integration**: Cannot directly interact with IDEs, terminals, or development environments
-- **Real-time Constraints**: Cannot monitor ongoing development activities or system performance
+- **✅ Context Boundaries**: **RESOLVED - Now has AWS account access for real-time infrastructure context**
+- **✅ Real-time Constraints**: **RESOLVED - Can monitor AWS resources and performance metrics**
 
 ### 🚀 Synergistic Benefits of Integration
 
-#### 1. **Intelligent Code Development**
+#### 1. **🆕 Infrastructure-Aware Development** 
+- **Live AWS Monitoring**: Q watches your actual AWS resources while you code
+- **Cost-Conscious Coding**: Real-time feedback on resource usage and cost implications
+- **Security-First Development**: Continuous security analysis of both code and infrastructure
+- **Performance-Driven Decisions**: CloudWatch metrics inform architectural choices
+
+#### 2. **Intelligent Code Development**
 - **Q Analyzes** → **Kiro Implements**: Q reviews code patterns and suggests improvements, Kiro makes precise edits
 - **Real-time Feedback Loop**: Q monitors Kiro's changes and provides continuous guidance
 - **Contextual Suggestions**: Q understands current project state through Kiro's status updates
 
-#### 2. **Proactive Project Management**
+#### 3. **Proactive Project Management**
 - **Cross-Project Orchestration**: Q manages multiple Kiro projects simultaneously
-- **Performance Monitoring**: Q analyzes project metrics reported by Kiro
+- **📊 Live Performance Monitoring**: Q analyzes real AWS CloudWatch metrics, not just project reports
+- **💰 Cost Management**: Automatic alerts for expensive operations and optimization opportunities
 - **Workflow Optimization**: Q suggests process improvements based on Kiro's activity patterns
 
-#### 3. **Enhanced Problem Solving**
+#### 4. **Enhanced Problem Solving**
 - **Diagnostic Partnership**: Q analyzes error patterns, Kiro provides detailed system information
 - **Solution Implementation**: Q designs solutions, Kiro executes them with precision
 - **Iterative Refinement**: Continuous feedback loop for solution optimization
 
-#### 4. **Knowledge Amplification**
+#### 5. **Knowledge Amplification**
 - **Learning Acceleration**: Q explains concepts while Kiro demonstrates implementation
 - **Best Practice Integration**: Q ensures code follows industry standards, Kiro enforces them
 - **Documentation Synchronization**: Q generates docs that match Kiro's actual implementation
 
-#### 5. **Productivity Multiplication**
+#### 6. **Productivity Multiplication**
 - **Automated Workflows**: Q designs efficient processes, Kiro executes them reliably
 - **Predictive Assistance**: Q anticipates needs based on Kiro's project patterns
 - **Seamless Context Switching**: Q maintains project context as Kiro switches between tasks
@@ -81,19 +134,27 @@ A lightweight, production-ready MCP (Model Context Protocol) server that enables
 
 **For Developers:**
 - ✅ **AI Pair Programming**: Continuous intelligent assistance without leaving the IDE
+- ✅ **🆕 Infrastructure-Aware Coding**: Real-time AWS resource monitoring while you develop
+- ✅ **💰 Cost-Conscious Development**: Immediate feedback on expensive operations and optimizations
+- ✅ **🛡️ Security-First Approach**: Live security analysis of both code and deployed infrastructure
 - ✅ **Proactive Problem Solving**: Issues identified and solutions suggested before they become critical
 - ✅ **Cross-Project Intelligence**: Insights and patterns shared across all development work
 - ✅ **Automated Documentation**: Real-time documentation that stays synchronized with code
-- ✅ **Performance Optimization**: Continuous monitoring and improvement suggestions
+- ✅ **📊 Performance Optimization**: CloudWatch-driven insights and improvement suggestions
 
 **For Teams:**
 - ✅ **Consistent Standards**: Q ensures all team members follow best practices through Kiro
+- ✅ **💰 Unified Cost Management**: Team-wide visibility into AWS spending and optimization opportunities
+- ✅ **🛡️ Centralized Security**: Consistent security posture across all team projects and deployments
 - ✅ **Knowledge Sharing**: Q learns from each developer's patterns and shares insights
 - ✅ **Quality Assurance**: Automated code review and improvement suggestions
 - ✅ **Onboarding Acceleration**: New team members get intelligent guidance through Kiro
 
 **For Organizations:**
 - ✅ **Development Velocity**: Faster development cycles with intelligent automation
+- ✅ **💰 Cost Optimization**: Significant AWS cost savings through intelligent resource management
+- ✅ **🛡️ Security Compliance**: Automated security auditing and compliance monitoring
+- ✅ **📊 Operational Excellence**: Data-driven decisions based on real infrastructure metrics
 - ✅ **Code Quality**: Consistent application of best practices across all projects
 - ✅ **Risk Reduction**: Proactive identification of potential issues and technical debt
 - ✅ **Innovation Enablement**: More time for creative work, less time on routine tasks
