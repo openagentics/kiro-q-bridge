@@ -1,3 +1,5 @@
+![Kiro ↔ Amazon Q Bridge](https://github.com/user-attachments/assets/b8f8c4c4-8f8e-4c4e-8f8e-4c4e8f8e4c4e)
+
 # Kiro-Q Bridge v4
 
 ## Clean, Fast, Reliable COMMUNICATION Bridge Between Kiro IDE and Amazon Q Developer
