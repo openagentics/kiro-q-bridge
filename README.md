@@ -26,10 +26,12 @@
 
 ```
 kiro-q-bridge-v4/
-├── mcp-server.js          # Single MCP server (Node.js)
+├── mcp-server.js          # Single MCP server (Node.js) with project tags
 ├── config.json           # Project configuration
 ├── install.sh            # Simple installer
 ├── test.sh               # Test script
+├── view-messages.sh      # View messages by project
+├── link-messages.sh      # Link messages to current project
 └── README.md             # This file
 ```
 
@@ -43,5 +45,7 @@ kiro-q-bridge-v4/
 
 - **Fast**: Sub-50ms startup time
 - **Reliable**: Proper JSON-RPC 2.0 protocol
-- **Simple**: 5 files, single responsibility
+- **Simple**: 7 files, single responsibility
 - **Portable**: Works on macOS, Linux, Windows
+- **Project-Aware**: Global message history with project context tags
+- **Utility Scripts**: View and link messages across projects

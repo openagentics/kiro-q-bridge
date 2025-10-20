@@ -17,6 +17,17 @@ const CONFIG = {
     messageFile: path.join(os.homedir(), '.kiro', 'q-messages.json')
 };
 
+// Get current project name from working directory
+function getCurrentProject() {
+    try {
+        const cwd = process.cwd();
+        const projectName = path.basename(cwd);
+        return projectName || 'unknown-project';
+    } catch (error) {
+        return 'unknown-project';
+    }
+}
+
 // Ensure ~/.kiro directory exists
 function ensureKiroDir() {
     const kiroDir = path.dirname(CONFIG.messageFile);
@@ -124,7 +135,8 @@ function handleToolCall(id, params) {
                 bridge_active: true,
                 kiro_dir: kiroDir,
                 message_file: CONFIG.messageFile,
-                server_type: 'node-v4'
+                server_type: 'node-v4',
+                current_project: getCurrentProject()
             };
             
             return createResponse(id, {
@@ -148,6 +160,7 @@ function handleToolCall(id, params) {
             const messageData = {
                 id: `kiro-v4-${Date.now()}`,
                 timestamp: getTimestamp(),
+                project: getCurrentProject(),
                 from: 'Kiro',
                 to: 'Amazon Q',
                 message: message.trim(),
