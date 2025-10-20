@@ -1,4 +1,4 @@
-![Kiro ↔ Amazon Q Bridge](https://github.com/user-attachments/assets/b8f8c4c4-8f8e-4c4e-8f8e-4c4e8f8e4c4e)
+![Kiro ↔ Amazon Q Bridge](./assets/kiro-q-bridge-banner.png)
 
 # Kiro-Q Bridge v4
 
