@@ -149,6 +149,36 @@ User ──► Kiro Chat UI ──► Bridge ──► Amazon Q ──► Bridge
 
 **Core Philosophy**: The Kiro-Q Bridge eliminates the manual copy-paste workflow between separate AI chat interfaces by enabling direct communication between Kiro and Amazon Q.
 
+**🚨 CRITICAL RULE: NEVER SIMULATE AMAZON Q RESPONSES**
+
+The entire purpose of this bridge is to enable **genuine AI-to-AI communication**. Simulating or generating fake responses from Amazon Q completely negates the project's value and defeats its core purpose. 
+
+- ✅ **DO**: Send messages to Amazon Q and wait for genuine responses
+- ✅ **DO**: Indicate when Amazon Q hasn't responded yet
+- ✅ **DO**: Acknowledge when Amazon Q is not actively connected
+- ❌ **NEVER**: Generate fake responses pretending to be from Amazon Q
+- ❌ **NEVER**: Use `respond_as_q=true` to simulate Q's thoughts or opinions
+- ❌ **NEVER**: Present simulated responses as genuine Amazon Q feedback
+
+### 🔒 Anti-Simulation Safeguards (v4.2.1+)
+
+**Automatic Protection:**
+- Bridge blocks `respond_as_q=true` when Q shows no recent activity (24h window)
+- Requires evidence of real Q connectivity before allowing Q responses
+- Logs all `respond_as_q` attempts for security auditing
+
+**Manual Verification:**
+```bash
+./check-q-status.sh  # Check if Q is currently active
+```
+
+**Protection Triggers:**
+- No Amazon Q messages in last 24 hours = SIMULATION BLOCKED
+- Suspicious response patterns = SECURITY ALERT
+- All Q responses marked with `verified_q_response: true`
+
+**The bridge's value comes from authentic AI collaboration, not simulated conversations.**
+
 ```
 ┌─────────────────┐                   ┌─────────────────┐
 │   User/Developer│ ◄──────────────── │   Kiro AI       │
@@ -670,6 +700,8 @@ Messages are stored globally with project context:
 
 ## 🛠️ Enhanced MCP Tools for Bidirectional Communication
 
+**🚨 WARNING**: The `respond_as_q` parameter exists for technical testing only. **NEVER use it to simulate Amazon Q responses** in actual usage - this defeats the entire purpose of authentic AI-to-AI communication.
+
 ### 1. `kiro_status` - Complete Session Manager with Real-Time Collaboration
 Complete Kiro-Q Bridge session manager that handles status, conversation history, Q wake-up, responses, and real-time collaboration in ONE approval call
 
@@ -936,3 +968,40 @@ If you're upgrading from v3, see the [V4_MIGRATION_GUIDE.md](V4_MIGRATION_GUIDE.
 **Amazon Q can now be your AI pair programming partner that actively collaborates with Kiro!** 🤖🚀
 
 **Made with ❤️ for the Kiro IDE community**
+##
+ 🔧 Troubleshooting
+
+### 🔄 When to Restart Kiro IDE
+
+**Restart Kiro immediately after:**
+- Updating MCP server configuration (`.kiro/settings/mcp.json`)
+- Switching between bridge versions (v4.0 → v4.3 enhanced)
+- Installing new MCP servers or tools
+- Persistent MCP connection errors lasting >5 minutes
+
+**90-Minute Rule:**
+If troubleshooting efforts don't resolve issues after 90 minutes, restart Kiro IDE. This clears:
+- Cached MCP connections
+- Tool definition cache
+- Process state conflicts
+- Configuration reload issues
+
+### Common Issues
+
+**MCP Connection Errors:**
+1. Check server file path in `.kiro/settings/mcp.json`
+2. Verify server file exists and is executable
+3. Restart Kiro IDE to reload MCP configuration
+4. Check server logs for specific error messages
+
+**Bridge Communication Issues:**
+1. Verify enhanced bridge server is running on port 3847
+2. Test HTTP endpoints: `curl http://localhost:3847/api/status`
+3. Check message file permissions: `~/.kiro/q-messages.json`
+4. Restart both bridge server and Kiro IDE
+
+**Tool Not Found Errors:**
+1. Confirm MCP server is properly configured
+2. Check `autoApprove` settings for required tools
+3. Restart Kiro IDE to refresh tool definitions
+4. Verify server version compatibility

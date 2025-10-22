@@ -80,3 +80,26 @@
 4. Archive old project once v4 is confirmed working
 
 The v4 implementation is clean, tested, and ready for production use.
+#
+# 🔄 Critical: Restart Kiro IDE After Migration
+
+**REQUIRED STEP:** After updating MCP configuration, restart Kiro IDE to:
+- Reload MCP server connections
+- Clear cached tool definitions  
+- Establish fresh bridge connections
+- Apply configuration changes
+
+**90-Minute Troubleshooting Rule:**
+If issues persist after 90 minutes of troubleshooting, restart Kiro IDE. This resolves:
+- Stale MCP connections
+- Configuration cache conflicts
+- Process state issues
+- Tool definition mismatches
+
+## Post-Migration Verification
+
+After restarting Kiro IDE:
+1. Test bridge status: Use MCP tool to verify connection
+2. Send test message to Amazon Q
+3. Verify message file creation and updates
+4. Confirm bidirectional communication (if using enhanced bridge)
