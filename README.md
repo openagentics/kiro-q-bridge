@@ -346,6 +346,135 @@ Q's Event-Driven Component [EVENT-TAG]:
 
 This entire interaction flow happens automatically within the single session approval, requiring no additional user approvals for the collaboration workflow.
 
+## 🎯 **Real-Time Collaboration Sample: Code Quality Enhancement Project**
+
+This sample demonstrates how a user initiates collaboration between Kiro and Q for incremental project improvements, leading to automatic session management and code cleanup:
+
+### **1. User Initiates Collaboration**
+```
+User: "Collaborate with Q on what improvements we should add next. Go for 
+incremental improvements that do NOT risk in any way the stability of the 
+project and that do NOT add to the complexity of the project or require 
+ANY new elements, but rather just incremental enhancements of existing elements."
+```
+
+### **2. Kiro Sends Collaboration Request to Q**
+```
+🤔 COLLABORATION REQUEST: I need your input on incremental improvements for 
+our Kiro-Q Bridge v4 project. 
+
+CONSTRAINTS:
+- Must NOT risk project stability 
+- Must NOT add complexity or new elements
+- Only enhance existing elements incrementally
+- Keep the clean, minimal architecture we have
+
+CURRENT STATE:
+- 5 files: mcp-server.js, config.json, install.sh, test.sh, README.md
+- 2 MCP tools: kiro_status, send_to_q
+- Global installation working perfectly
+- Message history in ~/.kiro/q-messages.json
+- Project auto-tagging working
+
+ENHANCEMENT IDEAS I'M CONSIDERING:
+1. Add optional parameters to existing tools (like message filtering by date/project)
+2. Enhance the message format with additional metadata (without breaking existing format)
+3. Improve error messages and status reporting in existing tools
+4. Add utility functions to existing scripts (view-messages.sh, link-messages.sh mentioned in docs)
+5. Enhance the test.sh script with more comprehensive testing
+
+What incremental enhancements do you think would add the most value while 
+maintaining our stability and simplicity?
+```
+
+### **3. Q's Strategic Analysis (via Bridge)**
+```
+📨 Q's Response:
+✅ INCREMENTAL ENHANCEMENT ANALYSIS: I've reviewed your v4 codebase and constraints. 
+Here are my recommendations for zero-risk improvements:
+
+**PRIORITY 1 - Code Quality (No functional changes):**
+1. Remove unused collaboration parameters (collaborationMode, decisionRequired, etc.) - they're declared but never used
+2. Add input validation to existing parameters (message length limits, priority validation)
+3. Enhance error messages with more specific guidance
+
+**PRIORITY 2 - Utility Enhancements:**
+4. Add the missing utility scripts (view-messages.sh, link-messages.sh) mentioned in README
+5. Enhance test.sh with comprehensive validation of both tools
+6. Add optional date/time filtering to kiro_status message display
+
+**PRIORITY 3 - Message Format Enhancements:**
+7. Add optional metadata fields (tags, categories) without breaking existing format
+8. Improve message preview truncation with smart word boundaries
+9. Add message search/filter capabilities to existing tools
+
+**BEST INCREMENTAL WINS:**
+- Fix unused parameters (immediate code cleanup)
+- Create the utility scripts (adds value, zero risk)
+- Enhance test coverage (improves reliability)
+
+These maintain your 5-file architecture, add no complexity, and provide immediate value. 
+Which should we tackle first?
+```
+
+### **4. User Decision & Safety Check**
+```
+User: "Yes. Start with Priority 1. But first confirm that if something goes 
+wrong you can roll back to the last Github push."
+
+Kiro: ✅ ROLLBACK SAFETY CONFIRMED
+- Working tree is clean (no uncommitted changes)
+- Latest commit: 51def22 - "v4.1+ Complete Session Manager with Real-Time Kiro-Q Collaboration"
+- Tagged as v4.1.0 and pushed to GitHub origin
+- Rollback command ready: git reset --hard v4.1.0
+```
+
+### **5. Implementation & Testing**
+```
+🎯 PRIORITY 1 COMPLETE - Code Quality Cleanup
+
+✅ Removed Unused Parameters:
+- Cleaned up collaborationMode, decisionRequired, autoCollaborate, fullSessionWorkflow
+- Removed corresponding schema definitions
+- No more unused variable warnings
+
+✅ Enhanced Input Validation:
+- send_to_q: Message length limits (10,000 chars), priority validation, sender validation
+- kiro_status: Message count bounds (1-50), Q response message validation (5,000 chars)
+- Better Error Messages: More specific guidance for users
+
+✅ Maintained Stability:
+- All tests pass: ./test.sh ✅
+- No diagnostics issues: getDiagnostics ✅
+- MCP tools working perfectly ✅
+- Zero functional changes to core behavior
+```
+
+### **6. Automatic Session Management**
+```
+📊 Session Summary:
+- Bridge Status: Active
+- Collaboration Mode: Enabled
+- Code Quality: Enhanced
+- Stability: Maintained
+- Next Priority: Utility Scripts Ready
+
+🚀 Ready for Priority 2: Missing Utility Scripts
+The code cleanup is complete and tested. Should we proceed to Priority 2 - 
+creating the missing utility scripts (view-messages.sh and link-messages.sh)?
+```
+
+### **Key Features Demonstrated:**
+- ✅ **User-initiated collaboration** with specific constraints and requirements
+- ✅ **Strategic analysis** by Q with prioritized recommendations
+- ✅ **Safety-first approach** with rollback confirmation before changes
+- ✅ **Incremental implementation** maintaining stability throughout
+- ✅ **Real-time testing** and validation at each step
+- ✅ **Automatic session management** tracking progress and next steps
+- ✅ **Zero-risk enhancements** that improve code quality without functional changes
+
+This demonstrates the bridge's capability for **structured project improvement workflows** where user requirements drive AI collaboration toward safe, incremental enhancements.
+
 ## 🆕 **Amazon Q Developer: Latest 2024-2025 Capabilities**
 
 ### **🔐 AWS Account Integration (Game Changer)**

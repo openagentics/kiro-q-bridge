@@ -93,11 +93,7 @@ function handleRequest(request) {
                                     auto_respond: { type: 'boolean', default: true, description: 'Automatically wake up Q and handle responses' },
                                     session_init: { type: 'boolean', default: true, description: 'Initialize new session - wake up Q and establish communication' },
                                     respond_as_q: { type: 'boolean', default: false, description: 'If Q needs to respond, do it automatically in this call' },
-                                    q_response_message: { type: 'string', description: 'Message for Q to send (when respond_as_q=true)' },
-                                    collaboration_mode: { type: 'boolean', default: true, description: 'Enable real-time Kiro-Q collaboration with disagreements' },
-                                    decision_required: { type: 'boolean', default: false, description: 'Flag when user decision is needed for Kiro-Q disagreement' },
-                                    auto_collaborate: { type: 'boolean', default: true, description: 'Automatically start collaboration on new messages' },
-                                    full_session_workflow: { type: 'boolean', default: true, description: 'Complete session workflow: init, check messages, collaborate, respond - all in one approval' }
+                                    q_response_message: { type: 'string', description: 'Message for Q to send (when respond_as_q=true)' }
                                 },
                                 required: []
                             }
@@ -144,16 +140,31 @@ function handleToolCall(id, params) {
         case 'kiro_status':
             const kiroDir = ensureKiroDir();
             const showMessages = args.show_messages !== false;
-            const messageCount = args.message_count || 5;
+            let messageCount = args.message_count || 5;
             const checkForResponses = args.check_for_responses !== false;
             const autoRespond = args.auto_respond !== false; // Default to true now
             const sessionInit = args.session_init === true;
             const respondAsQ = args.respond_as_q === true;
             const qResponseMessage = args.q_response_message || '';
-            const collaborationMode = args.collaboration_mode === true;
-            const decisionRequired = args.decision_required === true;
-            const autoCollaborate = args.auto_collaborate === true;
-            const fullSessionWorkflow = args.full_session_workflow !== false; // Default to true
+            
+            // Enhanced input validation for kiro_status
+            if (messageCount < 1 || messageCount > 50) {
+                messageCount = Math.max(1, Math.min(50, messageCount));
+            }
+            
+            if (respondAsQ && !qResponseMessage.trim()) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'When respond_as_q=true, q_response_message is required and cannot be empty.'
+                });
+            }
+            
+            if (qResponseMessage.length > 5000) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'Q response message too long. Maximum length is 5,000 characters.'
+                });
+            }
             
             const status = {
                 timestamp: getTimestamp(),
@@ -296,10 +307,32 @@ function handleToolCall(id, params) {
             const from = args.from || 'Kiro';
             const replyTo = args.reply_to || null;
             
+            // Enhanced input validation
             if (!message.trim()) {
                 return createResponse(id, null, {
                     code: -32602,
-                    message: 'Message cannot be empty'
+                    message: 'Message cannot be empty. Please provide a message to send.'
+                });
+            }
+            
+            if (message.length > 10000) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'Message too long. Maximum length is 10,000 characters.'
+                });
+            }
+            
+            if (!['low', 'normal', 'high'].includes(priority)) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'Invalid priority. Must be "low", "normal", or "high".'
+                });
+            }
+            
+            if (!['Kiro', 'Amazon Q'].includes(from)) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'Invalid sender. Must be "Kiro" or "Amazon Q".'
                 });
             }
             
