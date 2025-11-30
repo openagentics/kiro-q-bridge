@@ -795,7 +795,63 @@ kiro_status({
 5. ✅ **Compromise Implementation** - Execute user's decision with tagged monitoring
 6. ✅ **Performance Tracking** - Monitor effectiveness of chosen approach
 
-### 2. `send_to_q` - Bidirectional AI Communication
+### 2. `ask_q` - Intelligent Question Routing with Auto-Response ⭐ NEW
+**Automatically routes questions to Amazon Q and retrieves responses** - the complete workflow in one tool call!
+
+**What It Does:**
+- Detects AWS/Q-specific questions automatically
+- Sends question to Amazon Q with proper formatting
+- Polls for Q's response (configurable wait time)
+- Returns Q's answer directly to you
+- Eliminates the need to manually check for responses
+
+**Parameters:**
+- `question` (string, required) - The question to ask Amazon Q
+- `context` (string, optional) - Additional context to help Q provide better answers
+- `priority` (string, default: 'high') - Message priority: 'low', 'normal', or 'high'
+- `max_wait_seconds` (number, default: 30) - Maximum seconds to wait for Q's response
+- `poll_interval_seconds` (number, default: 2) - Seconds between polling checks
+
+**Example Usage:**
+```javascript
+ask_q({
+  question: "What is AWS AgentCore and how does it work?",
+  context: "We're building a Kiro-Q Bridge and considering AgentCore integration",
+  priority: "high",
+  max_wait_seconds: 30
+})
+```
+
+**Response Format:**
+```
+🎯 AMAZON Q RESPONSE (received in 4.2s after 2 polls)
+
+[Q's comprehensive answer here]
+
+---
+📊 Routing Stats:
+- Question ID: kiro-v4-1764510141747
+- Response ID: amazon-q-v4-1764510145923
+- Wait Time: 4.2s
+- Poll Attempts: 2
+```
+
+**Use Cases:**
+- AWS service questions (AgentCore, Bedrock, Lambda, etc.)
+- Amazon Q capabilities and features
+- Cloud architecture best practices
+- AWS cost optimization strategies
+- Security and compliance questions
+- Any Q-specific knowledge domain
+
+**Benefits:**
+- ✅ **One-Step Process**: Ask and get answer in single tool call
+- ✅ **Automatic Polling**: No need to manually check for responses
+- ✅ **Smart Routing**: Properly formats questions for Q
+- ✅ **Timeout Handling**: Gracefully handles cases where Q doesn't respond immediately
+- ✅ **Full Transparency**: Shows routing stats and timing information
+
+### 3. `send_to_q` - Bidirectional AI Communication
 Send messages between Kiro and Amazon Q in both directions
 
 **Parameters:**

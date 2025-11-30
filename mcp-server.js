@@ -142,6 +142,21 @@ function handleRequest(request) {
                                 },
                                 required: ['message']
                             }
+                        },
+                        {
+                            name: 'ask_q',
+                            description: 'Intelligent routing tool that automatically sends questions to Amazon Q and retrieves responses. Use this for AWS services, Q capabilities, cloud architecture, or any Q-specific knowledge. Handles the complete workflow: send question → wait for Q → return answer.',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    question: { type: 'string', description: 'The question to ask Amazon Q' },
+                                    context: { type: 'string', description: 'Optional context about why you are asking (helps Q provide better answers)' },
+                                    priority: { type: 'string', enum: ['low', 'normal', 'high'], default: 'high' },
+                                    max_wait_seconds: { type: 'number', default: 30, description: 'Maximum seconds to wait for Q response (default: 30)' },
+                                    poll_interval_seconds: { type: 'number', default: 2, description: 'Seconds between polling checks (default: 2)' }
+                                },
+                                required: ['question']
+                            }
                         }
                     ]
                 });
@@ -451,6 +466,122 @@ function handleToolCall(id, params) {
                     text: `${responseIcon} Message ${actionText}\n\nID: ${messageData.id}\nFrom: ${from}\nTo: ${to}\nMessage: ${message}\nPriority: ${priority}\nTimestamp: ${messageData.timestamp}${replyTo ? `\nReplying to: ${replyTo}` : ''}`
                 }]
             });
+            
+        case 'ask_q':
+            const question = args.question || '';
+            const context = args.context || '';
+            const askPriority = args.priority || 'high';
+            const maxWaitSeconds = args.max_wait_seconds || 30;
+            const pollIntervalSeconds = args.poll_interval_seconds || 2;
+            
+            // Validate inputs
+            if (!question.trim()) {
+                return createResponse(id, null, {
+                    code: -32602,
+                    message: 'Question cannot be empty.'
+                });
+            }
+            
+            // Build the message to Q
+            let fullMessage = `🤔 QUESTION FROM KIRO\n\n${question}`;
+            if (context) {
+                fullMessage += `\n\n**Context:** ${context}`;
+            }
+            fullMessage += `\n\n**Instructions:** Please provide a comprehensive answer. This is an automated routing from the Kiro-Q Bridge that will display your response directly to the user.`;
+            
+            // Send question to Q
+            ensureMessageFile();
+            let allMsgs = [];
+            
+            if (fs.existsSync(CONFIG.messageFile)) {
+                try {
+                    const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+                    allMsgs = JSON.parse(data);
+                } catch (e) {
+                    allMsgs = [];
+                }
+            }
+            
+            const questionMsg = {
+                id: `kiro-v4-${Date.now()}`,
+                timestamp: getTimestamp(),
+                project: getCurrentProject(),
+                from: 'Kiro',
+                to: 'Amazon Q',
+                message: fullMessage,
+                priority: askPriority,
+                reply_to: null,
+                status: 'queued',
+                version: 'v4',
+                auto_routed: true
+            };
+            
+            allMsgs.push(questionMsg);
+            
+            if (allMsgs.length > 100) {
+                allMsgs = allMsgs.slice(-100);
+            }
+            
+            fs.writeFileSync(CONFIG.messageFile, JSON.stringify(allMsgs, null, 2));
+            
+            // Poll for Q's response
+            const startTime = Date.now();
+            const maxWaitMs = maxWaitSeconds * 1000;
+            const pollIntervalMs = pollIntervalSeconds * 1000;
+            let qResponse = null;
+            let attempts = 0;
+            
+            function sleep(ms) {
+                const start = Date.now();
+                while (Date.now() - start < ms) {
+                    // Busy wait (not ideal but works for MCP server context)
+                }
+            }
+            
+            while (Date.now() - startTime < maxWaitMs) {
+                attempts++;
+                sleep(pollIntervalMs);
+                
+                // Check for Q's response
+                try {
+                    const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+                    const currentMsgs = JSON.parse(data);
+                    
+                    // Look for Q's response after our question
+                    const qResponses = currentMsgs.filter(msg => 
+                        msg.from === 'Amazon Q' &&
+                        msg.to === 'Kiro' &&
+                        new Date(msg.timestamp) > new Date(questionMsg.timestamp) &&
+                        (msg.reply_to === questionMsg.id || 
+                         new Date(msg.timestamp).getTime() - new Date(questionMsg.timestamp).getTime() < 60000)
+                    );
+                    
+                    if (qResponses.length > 0) {
+                        qResponse = qResponses[qResponses.length - 1];
+                        break;
+                    }
+                } catch (e) {
+                    // Continue polling
+                }
+            }
+            
+            const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(1);
+            
+            if (qResponse) {
+                return createResponse(id, {
+                    content: [{
+                        type: 'text',
+                        text: `🎯 AMAZON Q RESPONSE (received in ${elapsedSeconds}s after ${attempts} polls)\n\n${qResponse.message}\n\n---\n📊 Routing Stats:\n- Question ID: ${questionMsg.id}\n- Response ID: ${qResponse.id}\n- Wait Time: ${elapsedSeconds}s\n- Poll Attempts: ${attempts}`
+                    }]
+                });
+            } else {
+                return createResponse(id, {
+                    content: [{
+                        type: 'text',
+                        text: `⏳ TIMEOUT: Amazon Q did not respond within ${maxWaitSeconds} seconds.\n\n📨 Your question has been sent to Q (ID: ${questionMsg.id})\n\nYou can check for Q's response later using:\n- kiro_status tool with show_messages=true\n- Or check the message file directly\n\n💡 Q may still respond - the message is queued and waiting for Q's attention.`
+                    }]
+                });
+            }
             
         default:
             return createResponse(id, null, {
