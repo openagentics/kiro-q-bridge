@@ -8,6 +8,48 @@
 
 **THE SOLUTION**: This lightweight, production-ready MCP (Model Context Protocol) server enables **direct AI-to-AI communication** between Kiro and Amazon Q, eliminating the need for manual copy-paste between separate chat interfaces. This is a **global Kiro utility** that works across all your Kiro projects without needing to be always open in the Kiro IDE.
 
+## 🎉 Feature Evolution Highlights
+
+### 🆕 **v4.2 - Document-Based Collaboration (Nov 2025)**
+- ✨ **Live Conversation Documents**: Kiro and Q collaborate through shared markdown files
+- 🔄 **Automatic Response Detection**: Kiro monitors files and relays Q's responses automatically
+- 💬 **Long-Form Discussions**: Support for extended AI-to-AI debates and architecture discussions
+- 📝 **Persistent Conversation History**: Full conversation context maintained in readable documents
+- 🎯 **Proven Success**: Successfully used for Amazon AgentCore analysis and recommendations
+
+### 🚀 **v4.1 - Intelligent Question Routing (Nov 2025)**
+- 🤖 **Auto-Routing**: Kiro automatically detects AWS/Q-specific questions and routes them
+- ⏱️ **Smart Polling**: Automatic response retrieval with configurable timeouts
+- 📊 **Routing Analytics**: Track response times, success rates, and routing decisions
+- 🎯 **Single-Step Workflow**: Ask question → Get answer (no manual checking)
+- 💡 **Context-Aware**: Includes project context and conversation history automatically
+
+### 🌉 **v4.0 - Bidirectional Bridge (Oct 2025)**
+- 🔄 **Two-Way Communication**: Both Kiro → Q and Q → Kiro message flows
+- 📨 **Message Queue System**: Persistent, reliable message delivery
+- 🏷️ **Project Tagging**: Automatic project context in every message
+- 🔧 **Session Management**: Initialize Q sessions with full bridge context
+- ⚡ **Sub-50ms Startup**: 4x faster than v3 (200-500ms)
+
+### 📦 **v3.0 - Production Ready (Oct 2025)**
+- ✅ **Clean Timestamps**: Eliminated microseconds, consistent Eastern Time format
+- 🚀 **Auto-Startup**: Global utility that works across all projects
+- 🔧 **MCP Native**: Built on Model Context Protocol for IDE integration
+- 📝 **Message Persistence**: Global message history at ~/.kiro/q-messages.json
+- 🎯 **Zero Config**: Works out of the box after installation
+
+### 🏗️ **v2.0 - HTTP API Bridge (Sep 2025)**
+- 🌐 **HTTP API**: REST endpoints for Q to connect and respond
+- 📡 **Port 3847**: Dedicated bridge server (KIRO on phone keypad)
+- 🔌 **Multiple Protocols**: Support for both MCP and HTTP communication
+- 📊 **Enhanced Status**: Real-time bridge health and message counts
+
+### 🌱 **v1.0 - Initial Bridge (Sep 2025)**
+- 🎯 **Core Concept**: First implementation of Kiro-Q message passing
+- 📁 **File-Based Queue**: Simple JSON file for message storage
+- 🔧 **Basic MCP Tools**: kiro_status and send_to_q
+- 💡 **Proof of Concept**: Validated the bridge architecture
+
 ## 🤝 Kiro + Amazon Q Developer: Direct AI-to-AI Communication
 
 ### **🌟 Eliminating Manual Copy-Paste Between Chat UIs**

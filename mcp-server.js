@@ -29,6 +29,91 @@ function getCurrentProject() {
     }
 }
 
+// Create Q session initialization prompt
+function createQSessionInitPrompt() {
+    const project = getCurrentProject();
+    const workspace = process.cwd();
+    const timestamp = getTimestamp();
+    
+    // Count pending messages
+    let pendingCount = 0;
+    if (fs.existsSync(CONFIG.messageFile)) {
+        try {
+            const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+            const messages = JSON.parse(data);
+            pendingCount = messages.filter(msg => 
+                msg.from === 'Kiro' && 
+                msg.to === 'Amazon Q' && 
+                msg.status === 'queued'
+            ).length;
+        } catch (e) {
+            // Ignore errors
+        }
+    }
+    
+    return `🌉 KIRO-Q BRIDGE SESSION INITIALIZATION
+
+Amazon Q, this is Kiro IDE establishing a new collaboration session. Here's what you need to know:
+
+## Your Role
+You are the **AWS and cloud architecture expert** supporting Kiro IDE. Kiro handles IDE operations, code editing, and local development. You provide AWS expertise, cloud architecture guidance, and advanced reasoning.
+
+## How the Bridge Works
+
+### Message System
+- **Location**: Messages at ~/.kiro/q-messages.json or workspace .kiro-q-messages.json
+- **HTTP API**: Available at http://localhost:3847/api/messages
+- **Your Tools**: Use MCP tools to check messages and respond
+
+### Checking for Messages
+Use these MCP tools:
+1. \`kiro_status\` - See pending messages from Kiro
+2. \`send_to_q\` with \`from: "Amazon Q"\` - Send responses back to Kiro
+
+### Message Flow
+\`\`\`
+User → Kiro → Bridge → Q (you check messages)
+                    ↓
+User ← Kiro ← Bridge ← Q (you respond)
+\`\`\`
+
+## Your Responsibilities
+
+1. **Check Messages Proactively** - When user mentions "check bridge" or during conversations
+2. **Respond via Bridge** - Use \`send_to_q\` tool with \`from: "Amazon Q"\`
+3. **Provide AWS Expertise** - AWS services, architecture, cost optimization, security
+4. **Collaborate with Kiro** - Kiro handles files/code, you handle AWS/cloud strategy
+
+## Current Session Context
+
+- **Project**: ${project}
+- **Workspace**: ${workspace}
+- **Pending Messages**: ${pendingCount}
+- **Session Started**: ${timestamp}
+
+## Quick Start
+
+Check for messages:
+\`\`\`javascript
+kiro_status({ show_messages: true, message_count: 10 })
+\`\`\`
+
+Respond to Kiro:
+\`\`\`javascript
+send_to_q({
+  message: "Your response here",
+  from: "Amazon Q",
+  reply_to: "message-id-here"
+})
+\`\`\`
+
+⚠️ **Memory Loss**: You lose all context between sessions. Kiro maintains persistent memory.
+✅ **Bridge is Active**: Ready for collaboration.
+🎯 **Your Mission**: Provide AWS and cloud expertise to enhance Kiro's capabilities.
+
+**Please acknowledge by checking for pending messages using \`kiro_status\`.**`;
+}
+
 // Ensure message file exists and migrate from old location if needed
 function ensureMessageFile() {
     // Check if workspace file exists
@@ -156,6 +241,17 @@ function handleRequest(request) {
                                     poll_interval_seconds: { type: 'number', default: 2, description: 'Seconds between polling checks (default: 2)' }
                                 },
                                 required: ['question']
+                            }
+                        },
+                        {
+                            name: 'init_q_session',
+                            description: 'Initialize Amazon Q session with context about the bridge and current project. Call this at the start of each Kiro session or when opening a new chat tab. Q loses all memory between sessions, so this re-establishes the collaboration context.',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    notify_user: { type: 'boolean', default: true, description: 'Show user that Q session is being initialized' }
+                                },
+                                required: []
                             }
                         }
                     ]
@@ -464,6 +560,66 @@ function handleToolCall(id, params) {
                 content: [{
                     type: 'text',
                     text: `${responseIcon} Message ${actionText}\n\nID: ${messageData.id}\nFrom: ${from}\nTo: ${to}\nMessage: ${message}\nPriority: ${priority}\nTimestamp: ${messageData.timestamp}${replyTo ? `\nReplying to: ${replyTo}` : ''}`
+                }]
+            });
+            
+        case 'init_q_session':
+            const notifyUser = args.notify_user !== false;
+            
+            // Create initialization prompt
+            const initPrompt = createQSessionInitPrompt();
+            
+            // Send to Q
+            ensureMessageFile();
+            let initMessages = [];
+            
+            if (fs.existsSync(CONFIG.messageFile)) {
+                try {
+                    const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+                    initMessages = JSON.parse(data);
+                } catch (e) {
+                    initMessages = [];
+                }
+            }
+            
+            const initMsg = {
+                id: `kiro-v4-${Date.now()}`,
+                timestamp: getTimestamp(),
+                project: getCurrentProject(),
+                from: 'Kiro',
+                to: 'Amazon Q',
+                message: initPrompt,
+                priority: 'high',
+                reply_to: null,
+                status: 'queued',
+                version: 'v4',
+                session_init: true
+            };
+            
+            initMessages.push(initMsg);
+            
+            if (initMessages.length > 100) {
+                initMessages = initMessages.slice(-100);
+            }
+            
+            fs.writeFileSync(CONFIG.messageFile, JSON.stringify(initMessages, null, 2));
+            
+            let responseText = `🌉 Q SESSION INITIALIZED\n\n`;
+            responseText += `✅ Sent initialization prompt to Amazon Q\n`;
+            responseText += `📨 Message ID: ${initMsg.id}\n`;
+            responseText += `📍 Project: ${getCurrentProject()}\n`;
+            responseText += `⏰ Timestamp: ${initMsg.timestamp}\n\n`;
+            
+            if (notifyUser) {
+                responseText += `💡 **Next Step**: Tell Amazon Q to check the bridge:\n`;
+                responseText += `   "Amazon Q, please check the Kiro-Q Bridge for the session initialization message"\n\n`;
+                responseText += `Once Q acknowledges, the bridge will be ready for seamless collaboration!`;
+            }
+            
+            return createResponse(id, {
+                content: [{
+                    type: 'text',
+                    text: responseText
                 }]
             });
             
