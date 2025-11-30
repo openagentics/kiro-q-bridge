@@ -14,7 +14,8 @@ const CONFIG = {
     protocolVersion: '2024-11-05',
     serverName: 'kiro-q-bridge-v4',
     serverVersion: '4.0.0',
-    messageFile: path.join(os.homedir(), '.kiro', 'q-messages.json')
+    messageFile: path.join(process.cwd(), '.kiro-q-messages.json'), // Move to workspace root
+    fallbackMessageFile: path.join(os.homedir(), '.kiro', 'q-messages.json') // Keep backup location
 };
 
 // Get current project name from working directory
@@ -28,9 +29,39 @@ function getCurrentProject() {
     }
 }
 
-// Ensure ~/.kiro directory exists
+// Ensure message file exists and migrate from old location if needed
+function ensureMessageFile() {
+    // Check if workspace file exists
+    if (!fs.existsSync(CONFIG.messageFile)) {
+        // Try to migrate from old location
+        if (fs.existsSync(CONFIG.fallbackMessageFile)) {
+            try {
+                const data = fs.readFileSync(CONFIG.fallbackMessageFile, 'utf8');
+                fs.writeFileSync(CONFIG.messageFile, data);
+                console.error(`[MIGRATION] Moved messages from ${CONFIG.fallbackMessageFile} to ${CONFIG.messageFile}`);
+            } catch (error) {
+                console.error(`[MIGRATION ERROR] Could not migrate messages: ${error.message}`);
+                // Create empty file
+                fs.writeFileSync(CONFIG.messageFile, '[]');
+            }
+        } else {
+            // Create empty file
+            fs.writeFileSync(CONFIG.messageFile, '[]');
+        }
+    }
+    
+    // Also ensure backup directory exists
+    const backupDir = path.dirname(CONFIG.fallbackMessageFile);
+    if (!fs.existsSync(backupDir)) {
+        fs.mkdirSync(backupDir, { recursive: true });
+    }
+    
+    return path.dirname(CONFIG.messageFile);
+}
+
+// Ensure .kiro directory exists (for compatibility)
 function ensureKiroDir() {
-    const kiroDir = path.dirname(CONFIG.messageFile);
+    const kiroDir = path.join(os.homedir(), '.kiro');
     if (!fs.existsSync(kiroDir)) {
         fs.mkdirSync(kiroDir, { recursive: true });
     }
@@ -92,7 +123,7 @@ function handleRequest(request) {
                                     check_for_responses: { type: 'boolean', default: true, description: 'Check for messages needing Q responses' },
                                     auto_respond: { type: 'boolean', default: true, description: 'Automatically wake up Q and handle responses' },
                                     session_init: { type: 'boolean', default: true, description: 'Initialize new session - wake up Q and establish communication' },
-                                    respond_as_q: { type: 'boolean', default: false, description: 'If Q needs to respond, do it automatically in this call' },
+                                    respond_as_q: { type: 'boolean', default: false, description: 'ONLY for verified Amazon Q responses - NEVER for simulation when Q is offline' },
                                     q_response_message: { type: 'string', description: 'Message for Q to send (when respond_as_q=true)' }
                                 },
                                 required: []
@@ -152,11 +183,17 @@ function handleToolCall(id, params) {
                 messageCount = Math.max(1, Math.min(50, messageCount));
             }
             
+            // CRITICAL VALIDATION: Prevent Q simulation
             if (respondAsQ && !qResponseMessage.trim()) {
                 return createResponse(id, null, {
                     code: -32602,
                     message: 'When respond_as_q=true, q_response_message is required and cannot be empty.'
                 });
+            }
+            
+            if (respondAsQ) {
+                // Additional safeguard: Log attempt to use respond_as_q
+                console.error(`[SECURITY] respond_as_q=true called at ${getTimestamp()} - Validating Q activity...`);
             }
             
             if (qResponseMessage.length > 5000) {
@@ -166,12 +203,14 @@ function handleToolCall(id, params) {
                 });
             }
             
+            const messageDir = ensureMessageFile();
             const status = {
                 timestamp: getTimestamp(),
                 version: CONFIG.serverVersion,
                 bridge_active: true,
-                kiro_dir: kiroDir,
+                message_dir: messageDir,
                 message_file: CONFIG.messageFile,
+                workspace_accessible: true, // Q can access without permissions
                 server_type: 'node-v4',
                 current_project: getCurrentProject()
             };
@@ -216,35 +255,62 @@ function handleToolCall(id, params) {
                 }
             }
             
-            // Auto-respond as Q if requested and there are pending messages
+            // CRITICAL SAFEGUARD: Only allow Q responses from actual Amazon Q
+            // This prevents Kiro from simulating Q when Q is offline
             if (respondAsQ && pendingMessages.length > 0 && qResponseMessage) {
-                const latestPending = pendingMessages[pendingMessages.length - 1];
+                actionsPerformed.push(`🔍 SECURITY CHECK: respondAsQ=${respondAsQ}, pending=${pendingMessages.length}, hasMessage=${!!qResponseMessage}`);
+                // ANTI-SIMULATION PROTECTION: Check for legitimate Q activity
+                // Find the last legitimate Q message (before simulation started on Oct 22)
+                const simulationStartTime = new Date('2025-10-22T19:00:00-05:00').getTime();
+                const lastLegitimateQ = allMessages
+                    .filter(msg => 
+                        msg.from === 'Amazon Q' && 
+                        new Date(msg.timestamp).getTime() < simulationStartTime
+                    )
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
                 
-                const qMessageData = {
-                    id: `amazon-q-v4-${Date.now()}`,
-                    timestamp: getTimestamp(),
-                    project: getCurrentProject(),
-                    from: 'Amazon Q',
-                    to: 'Kiro',
-                    message: qResponseMessage.trim(),
-                    priority: 'normal',
-                    reply_to: latestPending.id,
-                    status: 'delivered',
-                    version: 'v4'
-                };
+                const hoursSinceLastLegitimateQ = lastLegitimateQ ? 
+                    (Date.now() - new Date(lastLegitimateQ.timestamp).getTime()) / (1000 * 60 * 60) : 999;
                 
-                allMessages.push(qMessageData);
+                console.error(`[SECURITY] Last legitimate Q: ${lastLegitimateQ ? lastLegitimateQ.timestamp : 'NONE'}, Hours ago: ${Math.round(hoursSinceLastLegitimateQ)}`);
                 
-                // Keep only last 100 messages
-                if (allMessages.length > 100) {
-                    allMessages = allMessages.slice(-100);
+                // DEBUG: Add to status for visibility
+                actionsPerformed.push(`🔍 DEBUG: Last legitimate Q activity ${Math.round(hoursSinceLastLegitimateQ)} hours ago`);
+                
+                // Block simulation if no legitimate Q activity in last 2 hours
+                if (hoursSinceLastLegitimateQ > 2) {
+                    actionsPerformed.push(`🚨 SIMULATION BLOCKED: No legitimate Amazon Q activity in ${Math.round(hoursSinceLastLegitimateQ)} hours. Cannot respond as Q when Q is offline.`);
+                    statusText += `\n\n🚨 CRITICAL PROTECTION ACTIVATED:\nBlocked attempt to simulate Amazon Q response.\nLast legitimate Q activity: ${Math.round(hoursSinceLastLegitimateQ)} hours ago.\nAmazon Q must be actively connected to respond.\n`;
+                } else {
+                    const latestPending = pendingMessages[pendingMessages.length - 1];
+                    
+                    const qMessageData = {
+                        id: `amazon-q-v4-${Date.now()}`,
+                        timestamp: getTimestamp(),
+                        project: getCurrentProject(),
+                        from: 'Amazon Q',
+                        to: 'Kiro',
+                        message: qResponseMessage.trim(),
+                        priority: 'normal',
+                        reply_to: latestPending.id,
+                        status: 'delivered',
+                        version: 'v4',
+                        verified_q_response: true // Mark as verified Q response
+                    };
+                    
+                    allMessages.push(qMessageData);
+                    
+                    // Keep only last 100 messages
+                    if (allMessages.length > 100) {
+                        allMessages = allMessages.slice(-100);
+                    }
+                    
+                    fs.writeFileSync(CONFIG.messageFile, JSON.stringify(allMessages, null, 2));
+                    actionsPerformed.push(`📨 Q RESPONDED: "${qResponseMessage.substring(0, 60)}..."`);
+                    
+                    // Remove the responded message from pending
+                    pendingMessages = pendingMessages.filter(msg => msg.id !== latestPending.id);
                 }
-                
-                fs.writeFileSync(CONFIG.messageFile, JSON.stringify(allMessages, null, 2));
-                actionsPerformed.push(`📨 Q RESPONDED: "${qResponseMessage.substring(0, 60)}..."`);
-                
-                // Remove the responded message from pending
-                pendingMessages = pendingMessages.filter(msg => msg.id !== latestPending.id);
             }
             
             // Add conversation history if requested
@@ -279,7 +345,8 @@ function handleToolCall(id, params) {
                 });
                 
                 if (autoRespond) {
-                    statusText += '\n🤖 AUTO-RESPOND MODE: Use respond_as_q=true with q_response_message to respond in next call!\n';
+                    statusText += '\n⚠️  PENDING RESPONSES: Amazon Q must be actively connected to respond.\n';
+                    statusText += '💡 TIP: Only use respond_as_q=true when Amazon Q is verified active (not for simulation).\n';
                 } else {
                     statusText += '\n💡 TIP: Amazon Q should use send_to_q with from="Amazon Q" to respond to these messages.\n';
                 }
@@ -353,7 +420,7 @@ function handleToolCall(id, params) {
             };
             
             // Save message to queue
-            ensureKiroDir();
+            ensureMessageFile();
             let messages = [];
             
             if (fs.existsSync(CONFIG.messageFile)) {

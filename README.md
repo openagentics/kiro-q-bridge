@@ -571,7 +571,7 @@ kiro-q-bridge-v4/
 
 ```bash
 # Clone and install
-git clone https://github.com/ArtificialChatInc/kiro-q-bridge.git
+git clone https://github.com/OpenAgentics/kiro-q-bridge.git
 cd kiro-q-bridge
 ./install.sh
 
@@ -961,7 +961,7 @@ If you're upgrading from v3, see the [V4_MIGRATION_GUIDE.md](V4_MIGRATION_GUIDE.
 - **Issues**: Report bugs via GitHub Issues
 - **Discussions**: Use GitHub Discussions for questions
 - **Documentation**: See the migration guides for detailed setup
-- **Previous Version**: [kiro-q-bridge v3](https://github.com/ArtificialChatInc/kiro-q-bridge) (legacy)
+- **Previous Version**: [kiro-q-bridge v3](https://github.com/OpenAgentics/kiro-q-bridge) (legacy)
 
 ---
 
