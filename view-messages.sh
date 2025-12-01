@@ -1,105 +1,126 @@
 #!/bin/bash
-# Kiro-Q Bridge v4 - Message Viewer Utility
-# View formatted conversation history from ~/.kiro/q-messages.json
+# Kiro-Q Bridge - Message Viewer
+# View messages across all projects or filter by specific project
 
-MESSAGE_FILE="$HOME/.kiro/q-messages.json"
-PROJECT_FILTER=""
+set -e
 
-# Parse command line arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -p|--project)
-            PROJECT_FILTER="$2"
-            shift 2
-            ;;
-        -h|--help)
-            echo "Usage: $0 [OPTIONS] [PROJECT_NAME]"
-            echo ""
-            echo "View Kiro-Q Bridge conversation history"
-            echo ""
-            echo "OPTIONS:"
-            echo "  -p, --project PROJECT    Filter messages by project name"
-            echo "  -h, --help              Show this help message"
-            echo ""
-            echo "EXAMPLES:"
-            echo "  $0                      # View all messages"
-            echo "  $0 my-project          # View messages for 'my-project'"
-            echo "  $0 -p my-project       # Same as above"
-            exit 0
-            ;;
-        *)
-            PROJECT_FILTER="$1"
-            shift
-            ;;
-    esac
-done
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
-# Check if message file exists
-if [[ ! -f "$MESSAGE_FILE" ]]; then
-    echo "❌ No message history found at $MESSAGE_FILE"
-    echo "💡 Send a message using the Kiro-Q Bridge to create the history file."
+# Message file locations
+GLOBAL_MESSAGES="$HOME/.kiro/q-messages.json"
+WORKSPACE_MESSAGES=".kiro-q-messages.json"
+
+# Check if jq is installed
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}Error: jq is not installed${NC}"
+    echo "Install with: brew install jq (macOS) or apt-get install jq (Linux)"
     exit 1
 fi
 
-# Check if jq is available for pretty formatting
-if command -v jq >/dev/null 2>&1; then
-    HAS_JQ=true
+# Determine which message file to use
+MESSAGE_FILE=""
+if [ -f "$WORKSPACE_MESSAGES" ]; then
+    MESSAGE_FILE="$WORKSPACE_MESSAGES"
+    echo -e "${BLUE}📁 Using workspace messages: $WORKSPACE_MESSAGES${NC}"
+elif [ -f "$GLOBAL_MESSAGES" ]; then
+    MESSAGE_FILE="$GLOBAL_MESSAGES"
+    echo -e "${BLUE}📁 Using global messages: $GLOBAL_MESSAGES${NC}"
 else
-    HAS_JQ=false
-    echo "💡 Install 'jq' for better formatting: brew install jq"
-    echo ""
+    echo -e "${RED}❌ No message file found${NC}"
+    echo "Checked:"
+    echo "  - $WORKSPACE_MESSAGES"
+    echo "  - $GLOBAL_MESSAGES"
+    exit 1
 fi
 
-echo "📝 Kiro-Q Bridge Message History"
-echo "================================"
-echo "📁 File: $MESSAGE_FILE"
+# Get filter parameters
+PROJECT_FILTER="${1:-all}"
+FORMAT="${2:-pretty}"
 
-if [[ -n "$PROJECT_FILTER" ]]; then
-    echo "🎯 Project Filter: $PROJECT_FILTER"
-fi
-
+echo -e "${GREEN}🔍 Kiro-Q Bridge Message Viewer${NC}"
 echo ""
 
-# Read and display messages
-if [[ "$HAS_JQ" == true ]]; then
-    # Use jq for pretty formatting and filtering
-    if [[ -n "$PROJECT_FILTER" ]]; then
-        jq -r --arg project "$PROJECT_FILTER" '
-            .[] | select(.project == $project) | 
-            "[\(.timestamp | strftime("%m/%d %H:%M"))] \(.from) → \(.to) (\(.priority)):\n\(.message)\n" + 
-            (if .reply_to then "↳ Reply to: \(.reply_to)\n" else "" end) + 
-            "---"
-        ' "$MESSAGE_FILE" 2>/dev/null || {
-            echo "❌ Error reading message file or no messages found for project '$PROJECT_FILTER'"
-            exit 1
-        }
-    else
-        jq -r '
-            .[] | 
-            "[\(.timestamp | strftime("%m/%d %H:%M"))] \(.from) → \(.to) (\(.priority)) [\(.project)]:\n\(.message)\n" + 
-            (if .reply_to then "↳ Reply to: \(.reply_to)\n" else "" end) + 
-            "---"
-        ' "$MESSAGE_FILE" 2>/dev/null || {
-            echo "❌ Error reading message file"
-            exit 1
-        }
-    fi
-else
-    # Fallback without jq - basic formatting
-    if [[ -n "$PROJECT_FILTER" ]]; then
-        echo "🔍 Filtering for project: $PROJECT_FILTER"
-        echo "(Install 'jq' for better formatting and filtering)"
-        echo ""
-    fi
+# Function to format a single message
+format_message() {
+    local msg="$1"
+    local timestamp=$(echo "$msg" | jq -r '.timestamp')
+    local from=$(echo "$msg" | jq -r '.from')
+    local to=$(echo "$msg" | jq -r '.to')
+    local project=$(echo "$msg" | jq -r '.project // "unknown"')
+    local message=$(echo "$msg" | jq -r '.message')
+    local priority=$(echo "$msg" | jq -r '.priority // "normal"')
+    local id=$(echo "$msg" | jq -r '.id // "no-id"')
     
-    # Simple cat output with basic formatting
-    echo "📄 Raw JSON (install 'jq' for formatted view):"
-    echo "=============================================="
-    cat "$MESSAGE_FILE"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}📨 Message ID:${NC} $id"
+    echo -e "${BLUE}⏰ Time:${NC} $timestamp"
+    echo -e "${BLUE}📂 Project:${NC} $project"
+    echo -e "${BLUE}👤 From:${NC} $from ${BLUE}→ To:${NC} $to"
+    echo -e "${BLUE}⚡ Priority:${NC} $priority"
+    echo ""
+    echo -e "${GREEN}Message:${NC}"
+    echo "$message" | head -20
+    if [ $(echo "$message" | wc -l) -gt 20 ]; then
+        echo -e "${YELLOW}... (message truncated, $(echo "$message" | wc -l) total lines)${NC}"
+    fi
+    echo ""
+}
+
+# Filter and display messages
+if [ "$PROJECT_FILTER" = "all" ]; then
+    echo -e "${GREEN}Showing all messages from all projects${NC}"
+    echo ""
+    
+    if [ "$FORMAT" = "json" ]; then
+        cat "$MESSAGE_FILE" | jq .
+    else
+        # Count messages
+        TOTAL=$(cat "$MESSAGE_FILE" | jq 'length')
+        echo -e "${BLUE}Total messages: $TOTAL${NC}"
+        echo ""
+        
+        # Show each message
+        cat "$MESSAGE_FILE" | jq -c '.[]' | while read -r msg; do
+            format_message "$msg"
+        done
+    fi
+else
+    echo -e "${GREEN}Filtering messages for project: ${YELLOW}$PROJECT_FILTER${NC}"
+    echo ""
+    
+    if [ "$FORMAT" = "json" ]; then
+        cat "$MESSAGE_FILE" | jq "[.[] | select(.project == \"$PROJECT_FILTER\")]"
+    else
+        # Count filtered messages
+        TOTAL=$(cat "$MESSAGE_FILE" | jq "[.[] | select(.project == \"$PROJECT_FILTER\")] | length")
+        echo -e "${BLUE}Messages for project '$PROJECT_FILTER': $TOTAL${NC}"
+        echo ""
+        
+        if [ "$TOTAL" -eq 0 ]; then
+            echo -e "${YELLOW}No messages found for project '$PROJECT_FILTER'${NC}"
+            echo ""
+            echo "Available projects:"
+            cat "$MESSAGE_FILE" | jq -r '.[].project // "unknown"' | sort -u | while read -r proj; do
+                echo "  - $proj"
+            done
+        else
+            # Show filtered messages
+            cat "$MESSAGE_FILE" | jq -c ".[] | select(.project == \"$PROJECT_FILTER\")" | while read -r msg; do
+                format_message "$msg"
+            done
+        fi
+    fi
 fi
 
+echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo "💡 Tips:"
-echo "  • Use 'jq' for better formatting: brew install jq"
-echo "  • Link to current project: ./link-messages.sh"
-echo "  • View in Kiro IDE: Cmd+P → ~/.kiro/q-messages.json"
+echo -e "${BLUE}Usage:${NC}"
+echo "  ./view-messages.sh              # View all messages"
+echo "  ./view-messages.sh <project>    # View messages for specific project"
+echo "  ./view-messages.sh all json     # View all messages as JSON"
+echo "  ./view-messages.sh <project> json  # View project messages as JSON"

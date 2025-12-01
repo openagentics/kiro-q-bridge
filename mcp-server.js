@@ -209,7 +209,9 @@ function handleRequest(request) {
                                     auto_respond: { type: 'boolean', default: true, description: 'Automatically wake up Q and handle responses' },
                                     session_init: { type: 'boolean', default: true, description: 'Initialize new session - wake up Q and establish communication' },
                                     respond_as_q: { type: 'boolean', default: false, description: 'ONLY for verified Amazon Q responses - NEVER for simulation when Q is offline' },
-                                    q_response_message: { type: 'string', description: 'Message for Q to send (when respond_as_q=true)' }
+                                    q_response_message: { type: 'string', description: 'Message for Q to send (when respond_as_q=true)' },
+                                    filter_project: { type: 'string', description: 'Filter messages by specific project name (optional)' },
+                                    show_all_projects: { type: 'boolean', default: false, description: 'Show messages from all projects, not just current' }
                                 },
                                 required: []
                             }
@@ -253,6 +255,31 @@ function handleRequest(request) {
                                 },
                                 required: []
                             }
+                        },
+                        {
+                            name: 'get_related_messages',
+                            description: 'Get messages related to current context from other projects. Useful for finding cross-project insights, similar discussions, or related work.',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    current_project: { type: 'string', description: 'Current project name (defaults to auto-detected)' },
+                                    related_topics: { type: 'array', items: { type: 'string' }, description: 'Topics or keywords to search for (e.g., ["AWS", "AgentCore"])' },
+                                    max_messages: { type: 'number', default: 10, description: 'Maximum number of related messages to return' },
+                                    exclude_current_project: { type: 'boolean', default: true, description: 'Exclude messages from current project' }
+                                },
+                                required: []
+                            }
+                        },
+                        {
+                            name: 'list_projects',
+                            description: 'List all projects that have messages in the bridge, with message counts and recent activity.',
+                            inputSchema: {
+                                type: 'object',
+                                properties: {
+                                    show_details: { type: 'boolean', default: true, description: 'Show detailed statistics for each project' }
+                                },
+                                required: []
+                            }
                         }
                     ]
                 });
@@ -288,6 +315,8 @@ function handleToolCall(id, params) {
             const sessionInit = args.session_init === true;
             const respondAsQ = args.respond_as_q === true;
             const qResponseMessage = args.q_response_message || '';
+            const filterProject = args.filter_project || null;
+            const showAllProjects = args.show_all_projects === true;
             
             // Enhanced input validation for kiro_status
             if (messageCount < 1 || messageCount > 50) {
@@ -426,14 +455,37 @@ function handleToolCall(id, params) {
             
             // Add conversation history if requested
             if (showMessages && allMessages.length > 0) {
-                const recentMessages = allMessages.slice(-messageCount);
-                statusText += '\n\n📝 Recent Conversation History:\n';
-                recentMessages.forEach(msg => {
-                    const time = new Date(msg.timestamp).toLocaleTimeString();
-                    const preview = msg.message.length > 100 ? 
-                        msg.message.substring(0, 100) + '...' : msg.message;
-                    statusText += `\n[${time}] ${msg.from} → ${msg.to}:\n${preview}\n`;
-                });
+                let messagesToShow = allMessages;
+                
+                // Apply project filtering
+                if (filterProject) {
+                    messagesToShow = allMessages.filter(msg => msg.project === filterProject);
+                    statusText += `\n\n📝 Conversation History (Project: ${filterProject}):\n`;
+                } else if (!showAllProjects) {
+                    // Default: show only current project
+                    const currentProj = getCurrentProject();
+                    messagesToShow = allMessages.filter(msg => msg.project === currentProj);
+                    statusText += `\n\n📝 Recent Conversation History (Current Project: ${currentProj}):\n`;
+                } else {
+                    statusText += '\n\n📝 Recent Conversation History (All Projects):\n';
+                }
+                
+                const recentMessages = messagesToShow.slice(-messageCount);
+                
+                if (recentMessages.length === 0) {
+                    statusText += '\n❌ No messages found for the specified filter\n';
+                    if (filterProject) {
+                        statusText += `\n💡 Use list_projects to see available projects\n`;
+                    }
+                } else {
+                    recentMessages.forEach(msg => {
+                        const time = new Date(msg.timestamp).toLocaleTimeString();
+                        const preview = msg.message.length > 100 ? 
+                            msg.message.substring(0, 100) + '...' : msg.message;
+                        const projectTag = showAllProjects ? `[${msg.project}] ` : '';
+                        statusText += `\n[${time}] ${projectTag}${msg.from} → ${msg.to}:\n${preview}\n`;
+                    });
+                }
             }
             
             // Show actions performed in this session call
@@ -738,6 +790,168 @@ function handleToolCall(id, params) {
                     }]
                 });
             }
+            
+        case 'get_related_messages':
+            const currentProj = args.current_project || getCurrentProject();
+            const relatedTopics = args.related_topics || [];
+            const maxMessages = args.max_messages || 10;
+            const excludeCurrent = args.exclude_current_project !== false;
+            
+            ensureMessageFile();
+            let relatedMessages = [];
+            let relatedText = `🔍 Related Messages Across Projects\n\n`;
+            relatedText += `Current Project: ${currentProj}\n`;
+            relatedText += `Search Topics: ${relatedTopics.length > 0 ? relatedTopics.join(', ') : 'All'}\n\n`;
+            
+            if (fs.existsSync(CONFIG.messageFile)) {
+                try {
+                    const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+                    const allMsgs = JSON.parse(data);
+                    
+                    // Filter messages
+                    relatedMessages = allMsgs.filter(msg => {
+                        // Exclude current project if requested
+                        if (excludeCurrent && msg.project === currentProj) {
+                            return false;
+                        }
+                        
+                        // If no topics specified, include all
+                        if (relatedTopics.length === 0) {
+                            return true;
+                        }
+                        
+                        // Check if message contains any of the topics
+                        const msgText = (msg.message || '').toLowerCase();
+                        return relatedTopics.some(topic => 
+                            msgText.includes(topic.toLowerCase())
+                        );
+                    });
+                    
+                    // Sort by timestamp (most recent first)
+                    relatedMessages.sort((a, b) => 
+                        new Date(b.timestamp) - new Date(a.timestamp)
+                    );
+                    
+                    // Limit results
+                    relatedMessages = relatedMessages.slice(0, maxMessages);
+                    
+                    if (relatedMessages.length === 0) {
+                        relatedText += '❌ No related messages found\n\n';
+                        relatedText += 'Try:\n';
+                        relatedText += '- Broadening your search topics\n';
+                        relatedText += '- Including current project (exclude_current_project: false)\n';
+                        relatedText += '- Using list_projects to see available projects\n';
+                    } else {
+                        relatedText += `✅ Found ${relatedMessages.length} related message(s)\n\n`;
+                        
+                        relatedMessages.forEach((msg, index) => {
+                            const time = new Date(msg.timestamp).toLocaleString();
+                            const preview = msg.message.length > 150 ? 
+                                msg.message.substring(0, 150) + '...' : msg.message;
+                            
+                            relatedText += `${index + 1}. [${msg.project}] ${msg.from} → ${msg.to}\n`;
+                            relatedText += `   Time: ${time}\n`;
+                            relatedText += `   Preview: ${preview}\n`;
+                            relatedText += `   ID: ${msg.id}\n\n`;
+                        });
+                        
+                        relatedText += `💡 Use kiro_status with filter_project to see full messages from a specific project\n`;
+                    }
+                } catch (e) {
+                    relatedText += `⚠️ Error reading messages: ${e.message}\n`;
+                }
+            } else {
+                relatedText += '❌ No message file found\n';
+            }
+            
+            return createResponse(id, {
+                content: [{
+                    type: 'text',
+                    text: relatedText
+                }]
+            });
+            
+        case 'list_projects':
+            const showDetails = args.show_details !== false;
+            
+            ensureMessageFile();
+            let projectsText = `📂 Projects in Kiro-Q Bridge\n\n`;
+            
+            if (fs.existsSync(CONFIG.messageFile)) {
+                try {
+                    const data = fs.readFileSync(CONFIG.messageFile, 'utf8');
+                    const allMsgs = JSON.parse(data);
+                    
+                    // Group messages by project
+                    const projectStats = {};
+                    allMsgs.forEach(msg => {
+                        const proj = msg.project || 'unknown';
+                        if (!projectStats[proj]) {
+                            projectStats[proj] = {
+                                total: 0,
+                                fromKiro: 0,
+                                fromQ: 0,
+                                lastActivity: null,
+                                topics: new Set()
+                            };
+                        }
+                        
+                        projectStats[proj].total++;
+                        if (msg.from === 'Kiro') projectStats[proj].fromKiro++;
+                        if (msg.from === 'Amazon Q') projectStats[proj].fromQ++;
+                        
+                        const msgTime = new Date(msg.timestamp);
+                        if (!projectStats[proj].lastActivity || msgTime > projectStats[proj].lastActivity) {
+                            projectStats[proj].lastActivity = msgTime;
+                        }
+                        
+                        // Extract potential topics (simple keyword extraction)
+                        const words = msg.message.toLowerCase().match(/\b\w{4,}\b/g) || [];
+                        words.slice(0, 5).forEach(word => projectStats[proj].topics.add(word));
+                    });
+                    
+                    const projects = Object.keys(projectStats).sort();
+                    const currentProj = getCurrentProject();
+                    
+                    projectsText += `Total Projects: ${projects.length}\n`;
+                    projectsText += `Current Project: ${currentProj}\n`;
+                    projectsText += `Total Messages: ${allMsgs.length}\n\n`;
+                    
+                    projects.forEach(proj => {
+                        const stats = projectStats[proj];
+                        const isCurrent = proj === currentProj;
+                        const marker = isCurrent ? '👉 ' : '   ';
+                        
+                        projectsText += `${marker}${proj}\n`;
+                        
+                        if (showDetails) {
+                            projectsText += `     Messages: ${stats.total} (Kiro: ${stats.fromKiro}, Q: ${stats.fromQ})\n`;
+                            projectsText += `     Last Activity: ${stats.lastActivity.toLocaleString()}\n`;
+                            
+                            const topicList = Array.from(stats.topics).slice(0, 5).join(', ');
+                            if (topicList) {
+                                projectsText += `     Topics: ${topicList}\n`;
+                            }
+                        }
+                        projectsText += '\n';
+                    });
+                    
+                    projectsText += `💡 Use get_related_messages to find messages across projects\n`;
+                    projectsText += `💡 Use kiro_status with filter_project to view specific project messages\n`;
+                    
+                } catch (e) {
+                    projectsText += `⚠️ Error reading messages: ${e.message}\n`;
+                }
+            } else {
+                projectsText += '❌ No message file found\n';
+            }
+            
+            return createResponse(id, {
+                content: [{
+                    type: 'text',
+                    text: projectsText
+                }]
+            });
             
         default:
             return createResponse(id, null, {

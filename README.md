@@ -626,8 +626,10 @@ cd kiro-q-bridge
 Once installed, the bridge is available **globally** in Kiro IDE:
 
 **Available Tools:**
-- `kiro_status` - Get bridge status and current project info
+- `kiro_status` - Get bridge status and current project info (now with project filtering!)
 - `send_to_q` - Send messages to Amazon Q with priority levels
+- `get_related_messages` - Find messages across projects by topic 🆕
+- `list_projects` - List all projects with message activity 🆕
 
 **Message Management:**
 ```bash
@@ -637,9 +639,32 @@ Once installed, the bridge is available **globally** in Kiro IDE:
 # View messages for specific project
 ./view-messages.sh my-project-name
 
+# View as JSON
+./view-messages.sh all json
+
 # Link message history to current project
 ./link-messages.sh
 ```
+
+**Cross-Project Context:**
+```javascript
+// Find related messages across projects
+get_related_messages({
+  related_topics: ["AWS", "Lambda"],
+  max_messages: 10
+})
+
+// List all projects
+list_projects({ show_details: true })
+
+// Filter messages by project
+kiro_status({
+  filter_project: "my-other-project",
+  message_count: 10
+})
+```
+
+📚 **See [CROSS_PROJECT_GUIDE.md](CROSS_PROJECT_GUIDE.md) for complete cross-project features documentation**
 
 ## 🔍 **CRITICAL: Accessing Your Kiro-Q Conversation History**
 

@@ -49,12 +49,28 @@ cat > "$MCP_CONFIG" << EOF
 }
 EOF
 
+# Make utility scripts executable
+chmod +x "$SCRIPT_DIR/view-messages.sh" 2>/dev/null || true
+chmod +x "$SCRIPT_DIR/link-messages.sh" 2>/dev/null || true
+chmod +x "$SCRIPT_DIR/test-cross-project.sh" 2>/dev/null || true
+
 echo "✅ Installation complete!"
 echo ""
 echo "Next steps:"
 echo "1. Restart Kiro IDE"
 echo "2. The MCP server will connect automatically"
 echo "3. Test with: kiro_status or send_to_q"
+echo ""
+echo "📚 New Cross-Project Features:"
+echo "   - list_projects() - See all projects with messages"
+echo "   - get_related_messages() - Find related messages across projects"
+echo "   - kiro_status with filter_project - View specific project messages"
+echo "   - ./view-messages.sh - Terminal message viewer"
+echo "   - ./link-messages.sh - Link global messages to workspace"
+echo ""
+echo "📖 Documentation:"
+echo "   - CROSS_PROJECT_GUIDE.md - Complete guide"
+echo "   - QUICK_REFERENCE.md - Quick command reference"
 echo ""
 echo "Configuration saved to: $MCP_CONFIG"
 echo "Server location: $SERVER_FILE"
